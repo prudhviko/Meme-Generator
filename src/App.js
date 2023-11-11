@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
-import Navbar from "./Component/Navbar";
-import Footer from "./Component/Footer";
+import Navbar from "./Components/Navbar";
+import Footer from "./Components/Footer";
 import axios from "axios";
 
 const App = () => {
   const [images, setImages] = useState([]);
-
   const [loading, setLoading] = useState(true);
+  const [topText, setTopText] = useState("Top Text");
+  const [bottomText, setBottomText] = useState("Bottom Text");
+  const [image,setImage] = useState()
 
   useEffect(() => {
     const accessKey = "F9m8l4-jOsx1vPwJPtcq9Q5XaBmfOocVNWdXy7PYNhQ";
@@ -14,9 +16,9 @@ const App = () => {
 
     const fetchData = async () => {
       try {
-        const response = await axios
-          .get(apiUrl)
-          .then((res) => setImages(res.data));
+        const response = await axios.get(apiUrl);
+        setImages(response.data);
+        setImage(response.data[0].urls.full)
         setLoading(false);
       } catch (error) {
         console.error("Error fetching images:", error);
@@ -26,15 +28,58 @@ const App = () => {
     fetchData();
   }, []);
 
+  const memeImageContainerStyle = {
+    position: "relative",
+  };
+
   const imageStyle = {
     width: "100%",
     height: "200px",
   };
 
   const memeImageStyle = {
-     width: "100%",
-     height: "600px"
-  }
+    width: "100%",
+    height: "600px",
+  };
+
+  const topTextStyle = {
+    position: "absolute",
+    top: "10%",
+    left: "50%",
+    transform: "translateX(-50%)",
+    textAlign: "center",
+    color: "white",
+    fontSize: "24px",
+    fontWeight: "bold",
+    textShadow: "2px 2px 4px #000",
+    width: "100%",
+    userSelect: "none",
+    direction: "ltr",
+  };
+
+  const bottomTextStyle = {
+    position: "absolute",
+    bottom: "10%",
+    left: "50%",
+    transform: "translateX(-50%)",
+    textAlign: "center",
+    color: "white",
+    fontSize: "24px",
+    fontWeight: "bold",
+    textShadow: "2px 2px 4px #000",
+    width: "100%",
+    userSelect: "none",
+    direction: "ltr",
+  };
+
+  const handleTopTextChange = (e) => {
+    setTopText(e.target.value);
+  };
+
+  const handleBottomTextChange = (e) => {
+    setBottomText(e.target.value);
+  };
+
   return (
     <div className="app">
       <Navbar />
@@ -51,7 +96,8 @@ const App = () => {
                       className="img-fluid"
                       src={image.urls.full}
                       alt={image.alt_description}
-                      style={imageStyle}
+                      style={memeImageStyle}
+                      onClick={() => setImage(image.urls.full)}
                     />
                   </div>
                 ))}
@@ -59,8 +105,14 @@ const App = () => {
             </div>
             <div className="col-10">
               <div className="card rounded-0">
-                <div className="meme-image">
-                  <img src={images[0].urls.full} style={memeImageStyle}/>
+                <div className="meme-image" style={memeImageContainerStyle}>
+                  <img src={image} style={memeImageStyle} />
+                  <div style={topTextStyle} contentEditable onChange={handleTopTextChange}>
+                    {topText}
+                  </div>
+                  <div style={bottomTextStyle} contentEditable onChange={handleBottomTextChange}>
+                    {bottomText}
+                  </div>
                 </div>
               </div>
             </div>
